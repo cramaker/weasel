@@ -54,6 +54,7 @@ package server
 import (
 	"context"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/pehowell/weasel"
@@ -97,7 +98,6 @@ func Init(mux *http.ServeMux, conf *Config) {
 			return r.Host, r.URL.Path[1:]
 		}
 	}
-
 	mux.Handle(conf.webroot(), s)
 	if conf.HookPath != "" {
 		mux.HandleFunc(conf.HookPath, conf.Storage.HandleChangeHook)
@@ -170,6 +170,7 @@ type server struct {
 //
 // Only GET, HEAD and OPTIONS methods are allowed.
 func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	r.URL.Path = ensureTrailingSlash(r.URL.Path)
 	_, forceTLS := s.tlsOnly[r.Host]
 	if forceTLS && r.Header.Get("X-Forwarded-Proto") == "https" {
 		w.Header().Set("Strict-Transport-Security", stsValue)
@@ -231,6 +232,13 @@ func redirectHandler(url string, code int) http.Handler {
 		}
 		http.Redirect(w, r, u, code)
 	})
+}
+
+func ensureTrailingSlash(path string) string {
+	if !strings.HasSuffix(path, "/") && !strings.Contains(path, ".") {
+		path += "/"
+	}
+	return path
 }
 
 func serveError(w http.ResponseWriter, code int, msg string) {
