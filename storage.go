@@ -30,7 +30,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/pehowell/weasel/internal"
+	"github.com/cramaker/weasel/internal"
 
 	"golang.org/x/oauth2"
 	"google.golang.org/appengine/v2/log"

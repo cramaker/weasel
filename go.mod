@@ -1,4 +1,4 @@
-module github.com/pehowell/weasel
+module github.com/cramaker/weasel
 
 go 1.16
 
