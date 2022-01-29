@@ -241,13 +241,6 @@ func redirectHandler(url string, code int) http.Handler {
 	})
 }
 
-func ensureTrailingSlash(path string) string {
-	if !strings.HasSuffix(path, "/") && !strings.Contains(path, ".") {
-		path += "/"
-	}
-	return path
-}
-
 func serveError(w http.ResponseWriter, code int, msg string) {
 	if msg == "" {
 		msg = http.StatusText(code)
