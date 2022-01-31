@@ -57,7 +57,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cramaker/weasel"
+	"github.com/pehowell/weasel"
 
 	"google.golang.org/appengine/v2"
 	"google.golang.org/appengine/v2/log"
