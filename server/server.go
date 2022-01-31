@@ -186,8 +186,9 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, u, http.StatusMovedPermanently)
 		return
 	}
+
 	if !strings.HasSuffix(r.URL.Path, "/") && !strings.Contains(r.URL.Path, ".") {
-		u := "https://" + r.Host + r.URL.Path + "/"
+		u := r.URL.Scheme + r.Host + r.URL.Path + "/"
 		if r.URL.RawQuery != "" {
 			u += "?" + r.URL.RawQuery
 		}
