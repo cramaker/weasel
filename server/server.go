@@ -188,7 +188,11 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !strings.HasSuffix(r.URL.Path, "/") && !strings.Contains(r.URL.Path, ".") {
-		u := r.URL.Scheme + r.Host + r.URL.Path + "/"
+		scheme := "http://"
+		if forceTLS {
+			scheme = "https://"
+		}
+		u := scheme + r.Host + r.URL.Path + "/"
 		if r.URL.RawQuery != "" {
 			u += "?" + r.URL.RawQuery
 		}
