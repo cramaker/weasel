@@ -186,11 +186,10 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, u, http.StatusMovedPermanently)
 		return
 	}
-
 	if !strings.HasSuffix(r.URL.Path, "/") && !strings.Contains(r.URL.Path, ".") {
-		scheme := "http://"
-		if forceTLS {
-			scheme = "https://"
+		scheme := "https://"
+		if r.Header.Get("X-Forwarded-Proto") == "http" {
+			scheme = "http://"
 		}
 		u := scheme + r.Host + r.URL.Path + "/"
 		if r.URL.RawQuery != "" {

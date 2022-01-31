@@ -116,6 +116,40 @@ func TestTLSOnly(t *testing.T) {
 	}
 }
 
+func TestTrailingSlashHandling(t *testing.T) {
+	gcs := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// empty 200 OK response
+	}))
+	defer gcs.Close()
+	srv := &server{
+		storage: &weasel.Storage{Base: gcs.URL},
+	}
+	r, _ := testInstance.NewRequest("GET", "https://example.com/documentation", nil)
+	r.Header.Set("X-Forwarded-Proto", "https")
+	w := httptest.NewRecorder()
+	srv.ServeHTTP(w, r)
+	if w.Code != http.StatusMovedPermanently {
+		t.Errorf("w.Code = %d; want %d", w.Code, http.StatusMovedPermanently)
+	}
+	want := "https://example.com/documentation/"
+	if l := w.Header().Get("location"); l != want {
+		t.Errorf("location = %q; want %q", l, want)
+	}
+
+	r, _ = testInstance.NewRequest("GET", "http://example.com/documentation", nil)
+	r.Header.Set("X-Forwarded-Proto", "http")
+	w = httptest.NewRecorder()
+	srv.ServeHTTP(w, r)
+	if w.Code != http.StatusMovedPermanently {
+		t.Errorf("w.Code = %d; want %d", w.Code, http.StatusMovedPermanently)
+	}
+	want = "http://example.com/documentation/"
+	if l := w.Header().Get("location"); l != want {
+		t.Errorf("location = %q; want %q", l, want)
+	}
+
+}
+
 func TestServe_DefaultGCS(t *testing.T) {
 	const (
 		bucket       = "default-bucket"
